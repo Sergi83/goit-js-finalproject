@@ -49,8 +49,12 @@ function handleClick(e) {
   createModal(imageData);
 }
 
+/**
+ * create modal window with image, open and close it
+ * @param {object} imageData - link for big photo and its description
+ */
 function createModal({ original, description }) {
-  // create modal with big image
+  // create modal with big image, add options: on show - add event listener (event when push escape button -> close modal); on close - remove event listener
   const instance = basicLightbox.create(
     `
   <img
@@ -59,15 +63,22 @@ function createModal({ original, description }) {
       data-source="${original}"
       alt="${description}"
     />
-  `
+  `,
+    {
+      onShow: () => {
+        document.addEventListener('keydown', handleKeydown);
+      },
+      onClose: () => {
+        document.removeEventListener('keydown', handleKeydown);
+      },
+    }
   );
 
-  // show the modal, add event listener that close modal when key Escape clicked
-  instance.show(() => {
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') {
-        instance.close();
-      }
-    });
-  });
+  function handleKeydown(e) {
+    if (e.key === 'Escape') {
+      instance.close();
+    }
+  }
+
+  instance.show();
 }
